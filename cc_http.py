@@ -9,7 +9,7 @@ class cc_http(object):
     server_url = 'http://azenguard.com/CatChat/'
     username='james'
     password='computer'
-    userid=1
+    userid=0
 
     def md5(self, fname):
         hash_md5 = hashlib.md5()

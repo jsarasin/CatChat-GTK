@@ -12,7 +12,7 @@ def get_pixbuf_thumbnail_from_hash(cc_http_connection, hash):
     cached_file_name = "thumbnails/" + hash
 
     if os.path.isfile(cached_file_name) == False:
-        if download_thumbnail_from_hash(cc_http_connection, hash) == True:
+        if download_thumbnail_from_hash(cc_http_connection, hash):
             picture = GdkPixbuf.Pixbuf.new_from_file(cached_file_name)
         else:
             picture = GdkPixbuf.Pixbuf.new_from_file("missing.png")
