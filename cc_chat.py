@@ -42,12 +42,9 @@ class cc_chat(object):
 
         if(self.cchttp.check_hash_exists(md5) == False  ):
             self.cchttp.send_file(self.chatroom, filename)
-
         return md5
-
 
     def update(self):
         reply = self.cchttp.get_chat_from_id_range(self.chatroom, self.chat_range_end)
         for message in reply['chat_log']:
             self.add_message_bubble(message)
-

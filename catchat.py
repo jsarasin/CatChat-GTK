@@ -2,7 +2,6 @@ import gi
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk, Pango, Gdk, GObject
 
-
 import cc_chat
 import cc_http
 import urllib
@@ -86,14 +85,12 @@ class MyWindow(Gtk.Window):
 
         self.scroll_to_bottom()
 
-
     def scroll_to_bottom(self):
         marky = self.chatroom.chat_history.get_mark("end" + str(self.chatroom.chat_range_end))
         if(marky != None):
             self.textview.scroll_to_mark(marky, 0, True, 0,0)
 
     def on_entry_return(self, input):
-
         if(self.entry.get_text() == ""):
             self.update_chat();
             return
@@ -113,8 +110,6 @@ class MyWindow(Gtk.Window):
         self.scroll_to_bottom()
 
         return True
-
-
 
     def drag_drop_receive(self, widget, context, x, y, selection, target_type, time):
         if target_type == TARGET_TYPE_URI_LIST:

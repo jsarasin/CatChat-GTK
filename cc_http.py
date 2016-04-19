@@ -24,6 +24,7 @@ class cc_http(object):
                                                                                 'after': str(after),
                                                                                 'before': str(before)
                                                                                 } )
+        print r.text
         return json.loads(r.text)
 
     def say(self, chat_id, message):
