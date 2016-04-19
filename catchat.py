@@ -88,20 +88,20 @@ class MyWindow(Gtk.Window):
 
 		self.scroll_to_bottom()
 
-    def scroll_to_bottom(self):
-        marky = self.chatroom.chat_history.get_mark("end" + str(self.chatroom.chat_range_end))
-        if(marky != None):
-            self.textview.scroll_to_mark(marky, 0, True, 0,0)
+	def scroll_to_bottom(self):
+		marky = self.chatroom.chat_history.get_mark("end" + str(self.chatroom.chat_range_end))
+		if(marky != None):
+			self.textview.scroll_to_mark(marky, 0, True, 0,0)
 
-    def on_entry_return(self, input):
-        if(self.entry.get_text() == ""):
-            self.update_chat();
-            return
+	def on_entry_return(self, input):
+		if(self.entry.get_text() == ""):
+			self.update_chat();
+			return
 
 		self.chatroom.say(self.entry.get_text())
 		self.entry.set_text("")
-		self.chatroom.update()
-		self.scroll_to_bottom()
+		if(self.chatroom.update_required()):
+			self.scroll_to_bottom()
 
 	def drag_over(self, widget, context, x,y, time):
 		Gdk.drag_status(context, Gdk.DragAction.COPY, time)
@@ -109,8 +109,8 @@ class MyWindow(Gtk.Window):
 
 	def update_chat(self):
 		#GObject.idle_add(self.update_chat_worker)
-		self.chatroom.update()
-		self.scroll_to_bottom()
+		if(self.chatroom.update_required()):
+			self.scroll_to_bottom()
 
 		return True
 
@@ -125,8 +125,8 @@ class MyWindow(Gtk.Window):
 				if os.path.isfile(path):  # is it file?
 					hash = self.chatroom.maybe_send_file_return_hash(path)
 					self.chatroom.say_picture(hash)
-					self.chatroom.update()
-					self.scroll_to_bottom()
+					if(self.chatroom.update_required()):
+						self.scroll_to_bottom()
 
 					#data = file(path).read()
 

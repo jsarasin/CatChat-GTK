@@ -18,14 +18,13 @@ class cc_http(object):
 				hash_md5.update(chunk)
 		return hash_md5.hexdigest()
 
-    def get_chat_from_id_range(self, chat_id, after=0, before=""):
-        r = requests.post(self.server_url + 'getchat.php', data={               'chatroom': str(chat_id),
-                                                                                'rangetype': "id",
-                                                                                'after': str(after),
-                                                                                'before': str(before)
-                                                                                } )
-        print r.text
-        return json.loads(r.text)
+	def get_chat_from_id_range(self, chat_id, after=0, before=""):
+		r = requests.post(self.server_url + 'getchat.php', data={			   'chatroom': str(chat_id),
+																				'rangetype': "id",
+																				'after': str(after),
+																				'before': str(before)
+																				} )
+		return json.loads(r.text)
 
 	def say(self, chat_id, message):
 		now = datetime.datetime.now()

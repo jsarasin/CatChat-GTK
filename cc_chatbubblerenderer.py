@@ -8,61 +8,63 @@ class ChatBubbleRenderer(object):
 	sender_id = 0
 	sender_says_tag = Gtk.TextTag()
 	cchttp = None
+	textbuffer = None
 
-	def __init__(self, cchttpv):
+	def __init__(self, cchttpv, textbuffer):
 		self.cchttp = cchttpv
 		self.sender_id = self.cchttp.userid
+		self.textbuffer = textbuffer
 
-	def setup_tags(self, textbuffer):
+	def setup_tags(self):
 		#background="orange", justification=Gtk.Justification.RIGHT
-		textbuffer.create_tag("says",		   weight=Pango.Weight.BOLD)
-		textbuffer.create_tag("message",		indent=10
+		self.textbuffer.create_tag("says",		   weight=Pango.Weight.BOLD)
+		self.textbuffer.create_tag("message",		indent=10
 												)
-		textbuffer.create_tag("time-sent",	  variant=Pango.Variant.SMALL_CAPS,
+		self.textbuffer.create_tag("time-sent",	  variant=Pango.Variant.SMALL_CAPS,
 												scale=0.75,
 												wrap_mode_set=Gtk.WrapMode.NONE)
 
 
-		textbuffer.create_tag("bubble-left",	paragraph_background="lightgreen",
+		self.textbuffer.create_tag("bubble-left",	paragraph_background="lightgreen",
 												right_margin=50)
 
-		textbuffer.create_tag("bubble-right",   justification=Gtk.Justification.RIGHT,
-												paragraph_background="lightblue",
-												left_margin = 100,
-												direction=Gtk.TextDirection.RTL,
-												wrap_mode=Gtk.WrapMode.WORD_CHAR,
-												right_margin = 0)
+		self.textbuffer.create_tag("bubble-right",   justification=Gtk.Justification.RIGHT, paragraph_background="lightblue", left_margin = 100, direction=Gtk.TextDirection.RTL, wrap_mode=Gtk.WrapMode.WORD_CHAR, right_margin = 0)
 
-	def get_bubble(self, message, textbuffer):
-		#textbuffer.get_iter_at_mark()
-		insert_at = textbuffer.get_end_iter()
+	def insert_image(self, iterator, hash):
+		picture = cc_pictures.get_pixbuf_thumbnail_from_hash(self.cchttp, hash)
+		self.textbuffer.insert_pixbuf(iterator, picture)
 
-		mark_begin = textbuffer.create_mark("begin" + str(message['idchats']), insert_at, True)
-		mark_end = textbuffer.create_mark("end" + str(message['idchats']), insert_at, False)
+	def insert_text(self, iterator, message):
+		self.textbuffer.insert_with_tags_by_name(iterator, message , "message")
 
-		textbuffer.insert(insert_at, "\n")
-		textbuffer.insert_with_tags_by_name(insert_at, str(message['creator']) + " says:\n", "says")
+	def get_bubble(self, message):
+		#self.textbuffer.get_iter_at_mark()
+		insert_at = self.textbuffer.get_end_iter()
+
+		mark_begin = self.textbuffer.create_mark("begin" + str(message['idchats']), insert_at, True)
+		mark_end = self.textbuffer.create_mark("end" + str(message['idchats']), insert_at, False)
+
+		self.textbuffer.insert(insert_at, "\n")
+		self.textbuffer.insert_with_tags_by_name(insert_at, str(message['creator']) + " says:\n", "says")
 
 		# Just a normal text message
 		if(message['message_type'] == 0):
-			textbuffer.insert_with_tags_by_name(insert_at, message['message'] , "message")
-
+			self.insert_text(insert_at, message['message'])
 		# A fancy pants image message!
 		if (message['message_type'] == 1):
-			picture = cc_pictures.get_pixbuf_thumbnail_from_hash(self.cchttp, message['message'])
-			textbuffer.insert_pixbuf(insert_at, picture)
+			self.insert_image(insert_at, message['message'])
 
-		textbuffer.insert_with_tags_by_name(insert_at, "\nTime sent: " + message['msg_written'], "time-sent")
-
+		self.textbuffer.insert_with_tags_by_name(insert_at, "\nTime sent: " + message['msg_written'], "time-sent")
 
 
-		begm = textbuffer.get_iter_at_mark(mark_begin)
-		endm = textbuffer.get_iter_at_mark(mark_end)
+
+		begm = self.textbuffer.get_iter_at_mark(mark_begin)
+		endm = self.textbuffer.get_iter_at_mark(mark_end)
 
 		if(message['creator'] == self.sender_id):
-			textbuffer.apply_tag_by_name("bubble-left", begm, endm)
+			self.textbuffer.apply_tag_by_name("bubble-left", begm, endm)
 		else:
-			textbuffer.apply_tag_by_name("bubble-right", begm, endm)
+			self.textbuffer.apply_tag_by_name("bubble-right", begm, endm)
 
 
 

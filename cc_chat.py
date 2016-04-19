@@ -15,8 +15,8 @@ class cc_chat(object):
 
 	def __init__(self, cchttpv):
 		self.cchttp = cchttpv
-		self.bubble_maker = cc_chatbubblerenderer.ChatBubbleRenderer(cchttpv)
-		self.bubble_maker.setup_tags(self.chat_history)
+		self.bubble_maker = cc_chatbubblerenderer.ChatBubbleRenderer(cchttpv, self.chat_history)
+		self.bubble_maker.setup_tags()
 
 		reply = self.cchttp.get_chat_from_id_range(self.chatroom)
 
@@ -29,7 +29,7 @@ class cc_chat(object):
 		if (message['idchats'] > self.chat_range_end):
 			self.chat_range_end = message['idchats']
 
-		self.bubble_maker.get_bubble(message, self.chat_history)
+		self.bubble_maker.get_bubble(message)
 
 	def say(self, message):
 		self.cchttp.say(self.chatroom, message)
@@ -40,11 +40,16 @@ class cc_chat(object):
 	def maybe_send_file_return_hash(self, filename):
 		md5 = self.cchttp.md5(filename)
 
-        if(self.cchttp.check_hash_exists(md5) == False  ):
-            self.cchttp.send_file(self.chatroom, filename)
-        return md5
+		if(self.cchttp.check_hash_exists(md5) == False  ):
+			self.cchttp.send_file(self.chatroom, filename)
+		return md5
 
-    def update(self):
-        reply = self.cchttp.get_chat_from_id_range(self.chatroom, self.chat_range_end)
-        for message in reply['chat_log']:
-            self.add_message_bubble(message)
+	def update_required(self):
+		reply = self.cchttp.get_chat_from_id_range(self.chatroom, self.chat_range_end)
+		if (reply.get('up_to_date', False) == True):
+			return False
+
+		for message in reply['chat_log']:
+			self.add_message_bubble(message)
+
+		return True
