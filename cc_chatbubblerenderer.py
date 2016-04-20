@@ -15,7 +15,7 @@ class ChatBubbleRenderer(object):
 	idchats_info = []
 
 	class BubbleMark:
-		SBubble 	= "sbubble"
+		SBubble 	= "sbubble",
 		EBubble 	= "ebubble"
 		SMessage 	= "smessage"
 		EMessage	= "emessage"
@@ -23,6 +23,7 @@ class ChatBubbleRenderer(object):
 		ESays		= "esays"
 		STime		= "stime"
 		ETime		= "etime"
+
 
 	def __init__(self, cchttpv, textbuffer):
 		self.cchttp = cchttpv
@@ -76,6 +77,7 @@ class ChatBubbleRenderer(object):
 
 		return iter
 
+
 	##############################
 	# things added to chat
 	def insert_image(self, iterator, message):
@@ -104,8 +106,6 @@ class ChatBubbleRenderer(object):
 		date_object = datetime.strptime(utcdateobject, '%Y-%m-%d %H:%M:%S')
 		catfood = { 'idchats':new_idchats, 'date_object':utcdateobject }
 		self.idchats_info.append(catfood)
-
-	#def insert_bubble
 
 	def get_between_marks(self, mark_begin, mark_end, mark_value):
 		smark = self.textbuffer.get_mark(mark_begin + ":" + mark_value)
