@@ -32,7 +32,7 @@ class cc_chat(object):
 		self.chat_history.insert(self.chat_history.get_end_iter(), "\n")
 		self.chat_history.insert(self.chat_history.get_end_iter(), "\n")
 
-		self.bubble_maker.get_bubble(message)
+		self.bubble_maker.add_bubble(message)
 
 	def say(self, message):
 		self.cchttp.say(self.chatroom, message)
