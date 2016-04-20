@@ -16,7 +16,6 @@ TARGET_TYPE_URI_LIST = 80
 
 CCHttp = cc_http.cc_http()
 
-
 def get_file_path_from_dnd_dropped_uri(uri):
 	# get the path to file
 	path = ""

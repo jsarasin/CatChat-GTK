@@ -12,7 +12,11 @@ class ChatBubbleRenderer(object):
 	cchttp = None
 	textbuffer = None
 	last_writter = -1	# The ID of the last bubble inserted
-	idchats_info = []
+
+	class BubbleList:
+		bubbles = []
+
+		
 
 	class BubbleMark:
 		SBubble 	= "sbubble",
@@ -60,8 +64,6 @@ class ChatBubbleRenderer(object):
 		elif (mark_type[0] == "e"):
 			left_gravity = False
 
-
-		print "creating mark: " + mark_type + ":" + str(mark_value) + "   left: " + str(left_gravity)
 		new_mark = self.textbuffer.create_mark(mark_type + ":" + str(mark_value), where, left_gravity)
 
 		new_mark.set_visible(True)
@@ -85,55 +87,60 @@ class ChatBubbleRenderer(object):
 		self.create_mark(self.BubbleMark.EMessage, message["idchats"], iterator)
 		picture = cc_pictures.get_pixbuf_thumbnail_from_hash(self.cchttp, message['message'])
 		self.textbuffer.insert_pixbuf(iterator, picture)
+		iterator.forward_char()
+		self.insert_space_ahead(iterator)
 
 	def insert_text(self, iterator, message):
 		self.create_mark(self.BubbleMark.SMessage, message["idchats"], iterator)
 		self.create_mark(self.BubbleMark.EMessage, message["idchats"], iterator)
-		self.textbuffer.insert_with_tags_by_name(iterator, message['message'] , "message")
+		self.textbuffer.insert_with_tags_by_name(iterator, message['message'] + "\n" , "message")
+		iterator.forward_char()
+		self.insert_space_ahead(iterator)
 
 	def insert_says(self, iterator, message):
 		self.create_mark(self.BubbleMark.SSays, str(message["creator"]) + "," + str(message['idchats']), iterator)
 		self.create_mark(self.BubbleMark.ESays, str(message["creator"]) + "," + str(message['idchats']), iterator)
 		self.textbuffer.insert_with_tags_by_name(iterator, str(message['creator']) + " says:\n", "says")
 		iterator.forward_char()
+		self.insert_space_ahead(iterator)
 
 	def insert_time(self, iterator, message):
 		self.create_mark(self.BubbleMark.STime, message["msg_written"], iterator)
 		self.create_mark(self.BubbleMark.ETime, message["msg_written"], iterator)
-		self.textbuffer.insert_with_tags_by_name(iterator, "\nTime sent: " + message['msg_written'], "time-sent")
-
-	def add_idchats_and_time(self, new_idchats, utcdateobject):
-		date_object = datetime.strptime(utcdateobject, '%Y-%m-%d %H:%M:%S')
-		catfood = { 'idchats':new_idchats, 'date_object':utcdateobject }
-		self.idchats_info.append(catfood)
+		self.textbuffer.insert_with_tags_by_name(iterator, "Time sent: " + message['msg_written'] + "\n", "time-sent")
+		iterator.forward_char()
+		self.insert_space_ahead(iterator)
 
 	def get_between_marks(self, mark_begin, mark_end, mark_value):
 		smark = self.textbuffer.get_mark(mark_begin + ":" + mark_value)
 		emark = self.textbuffer.get_mark(mark_end + ":" + mark_value)
 
+
+		print "mark range: " + str(self.textbuffer.get_iter_at_mark(smark).get_offset()) + " to "  + str(self.textbuffer.get_iter_at_mark(emark).get_offset())
 		if((smark or emark) == None):
 			return None
 
 		return (self.textbuffer.get_iter_at_mark(smark), self.textbuffer.get_iter_at_mark(emark))
 
+	def insert_space_ahead(self, iter):
+		self.textbuffer.insert(iter, "\0")
+		iter.backward_char()
+
+	def add_to_bubble_list(self, new_idchats, utcdateobject):
+		date_object = datetime.strptime(utcdateobject, '%Y-%m-%d %H:%M:%S')
+		catfood = { 'idchats':new_idchats, 'date_object':utcdateobject }
+		self.idchats_info.append(catfood)
+
 	def add_bubble(self, message):
 		insert_at = self.textbuffer.get_end_iter()
-		self.textbuffer.insert(insert_at, " ")
-		self.add_idchats_and_time(message['idchats'], message['msg_written'])
+
+		self.insert_space_ahead(insert_at)
 
 		# Add a space between this and the last bubble
 		self.textbuffer.insert(insert_at, "\n")
 
 		# Add the 'James says:'  part
 		self.insert_says(insert_at, message)
-
-		self.textbuffer.insert_
-		self.textbuffer.insert(insert_at, "\n")
-		self.textbuffer.insert(insert_at, "\n")
-
-		return
-		#insert_at.forward_char()
-		#insert_at = self.textbuffer.get_end_iter()
 
 		# Just a normal text message
 		if(message['message_type'] == 0):
@@ -142,28 +149,8 @@ class ChatBubbleRenderer(object):
 		if (message['message_type'] == 1):
 			self.insert_image(insert_at, message)
 
-		#insert_at.forward_char()
-		insert_at = self.textbuffer.get_end_iter()
-
 		self.insert_time(insert_at, message)
-		#insert_at.forward_char()
-		insert_at = self.textbuffer.get_end_iter()
 
 
-		#iter_range = self.get_between_marks(self.BubbleMark.SMessage, self.BubbleMark.EMessage, "231")
-		#self.textbuffer.apply_tag_by_name("highlight", *iter_range)
-
-		#self.textbuffer.apply_tag_by_name("highlight", )
-		#if(message['creator'] == self.sender_id):
-		#	self.textbuffer.apply_tag_by_name("bubble-left", begm, endm)
-		#else:
-		#	self.textbuffer.apply_tag_by_name("bubble-right", begm, endm)
-
-
-
-
-# {u'msg_written': u'2016-04-16 23:50:00',
-# u'message': u'hot dogs are ok i guess.',
-# u'creator': 0,
-# u'message_type': 0,
-# u'idchats': 1}
+		iter_range = self.get_between_marks(self.BubbleMark.SMessage, self.BubbleMark.EMessage, "231")
+		self.textbuffer.apply_tag_by_name("highlight", *iter_range)
