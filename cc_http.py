@@ -28,7 +28,7 @@ class cc_http(object):
 
 	def say(self, chat_id, message):
 		now = datetime.datetime.now()
-		r = requests.post(self.server_url + 'writechat.php', data={			 'chatroom': str(chat_id),
+		r = requests.post(self.server_url + 'writechat.php', data={			 	'chatroom': str(chat_id),
 																				'message':message,
 																				'msg_written': str(now),
 																				'message_type' : 0,
