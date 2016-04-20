@@ -12,7 +12,7 @@ class ChatBubbleRenderer(object):
 	last_writter = -1	# The ID of the last bubble inserted
 
 	class BubbleMark:
-		SBubble 	= "sbubble"
+		SBubble 	= "sbubble",
 		EBubble 	= "ebubble"
 		SMessage 	= "smessage"
 		EMessage	= "emessage"
@@ -20,6 +20,7 @@ class ChatBubbleRenderer(object):
 		ESays		= "esays"
 		STime		= "stime"
 		ETime		= "etime"
+
 
 	def __init__(self, cchttpv, textbuffer):
 		self.cchttp = cchttpv
@@ -65,6 +66,7 @@ class ChatBubbleRenderer(object):
 
 		return iter
 
+
 	##############################
 	# Visible things added to chat
 	def insert_image(self, iterator, message):
@@ -90,7 +92,7 @@ class ChatBubbleRenderer(object):
 
 	def get_bubble(self, message):
 		#self.textbuffer.get_iter_at_mark()
-		insert_at =
+		#insert_at =
 
 		self.textbuffer.insert(insert_at, "\n")
 
