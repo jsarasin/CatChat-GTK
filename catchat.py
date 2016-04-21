@@ -1,7 +1,3 @@
-import gi
-gi.require_version('Gtk', '3.0')
-from gi.repository import Gtk, Pango, Gdk, GObject
-
 import cc_chat
 import cc_http
 import urllib
@@ -55,10 +51,12 @@ class MyWindow(Gtk.Window):
 		self.chat_scrollwindow.set_hexpand(False)
 
 		self.textview = Gtk.TextView()
-		self.textview.set_editable(False)
-		self.textview.set_buffer(self.chatroom.chat_history)
-		self.textview.set_cursor_visible(False)
+		self.textview.set_buffer(self.chatroom.bubblebuffer)
 		self.textview.set_wrap_mode(Gtk.WrapMode.WORD_CHAR)
+		# self.textview.set_editable(False)
+		# self.textview.set_cursor_visible(False)
+		self.textview.connect("move-cursor", self.move_cursor_info)
+		self.textview.connect("button-release-event", self.mouse_click)
 
 		self.chat_scrollwindow.add(self.textview)
 		self.box.add(self.chat_scrollwindow)
@@ -67,7 +65,12 @@ class MyWindow(Gtk.Window):
 		self.entry = Gtk.Entry()
 		self.entry.connect("activate", self.on_entry_return)
 
-		GObject.timeout_add_seconds(2, self.update_chat)
+		self.label = Gtk.Label()
+		self.label.set_halign(Gtk.Align.START)
+		self.box.add(self.label)
+
+
+		#########GObject.timeout_add_seconds(2, self.update_chat)
 
 
 
@@ -85,12 +88,24 @@ class MyWindow(Gtk.Window):
 
 		self.box.add(self.entry)
 
-		self.scroll_to_bottom()
+		self.update_chat()
+
+
+	def mouse_click(self, widget, event):
+		self.update_info_label()
+		return False
+
+	def move_cursor_info(self, text_view,step,count,extend_selection):
+		self.update_info_label()
+
+	def update_info_label(self):
+		text = self.chatroom.bubblebuffer.get_iter_at_mark(self.chatroom.bubblebuffer.get_mark('insert'))
+		self.label.set_text(str(text.get_offset()))
+		pass
 
 	def scroll_to_bottom(self):
-		marky = self.chatroom.chat_history.get_mark("end" + str(self.chatroom.chat_range_end))
-		if(marky != None):
-			self.textview.scroll_to_mark(marky, 0, True, 0,0)
+		iter =  self.chatroom.bubblebuffer.get_iter_at_line(self.chatroom.bubblebuffer.get_line_count() - 1)
+
 
 	def on_entry_return(self, input):
 		if(self.entry.get_text() == ""):
@@ -99,6 +114,7 @@ class MyWindow(Gtk.Window):
 
 		self.chatroom.say(self.entry.get_text())
 		self.entry.set_text("")
+
 		if(self.chatroom.update_required()):
 			self.scroll_to_bottom()
 
@@ -107,7 +123,6 @@ class MyWindow(Gtk.Window):
 		return True
 
 	def update_chat(self):
-		#GObject.idle_add(self.update_chat_worker)
 		if(self.chatroom.update_required()):
 			self.scroll_to_bottom()
 
@@ -126,10 +141,6 @@ class MyWindow(Gtk.Window):
 					self.chatroom.say_picture(hash)
 					if(self.chatroom.update_required()):
 						self.scroll_to_bottom()
-
-					#data = file(path).read()
-
-
 
 win = MyWindow()
 win.connect("delete-event", Gtk.main_quit)

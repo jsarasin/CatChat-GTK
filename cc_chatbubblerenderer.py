@@ -3,154 +3,154 @@ from datetime import datetime
 
 import gi
 gi.require_version('Gtk', '3.0')
-from gi.repository import Gtk, Gdk, Pango, GdkPixbuf
+from gi.repository import Gtk, Gdk, Pango, GdkPixbuf, GLib
+
+BUBBLE_TIME_WINDOW = 5		# 5 minutes
+NON_VISIBLE_SPACE = " "	# Used for separating marks. Can I replace with the unicode replacement character,
+							# or will that mess with the TextBuffer operation?
+
+class BubbleMarkName:
+	SBubble = "sbubble",
+	EBubble = "ebubble"
+	SMessage = "smessage"
+	EMessage = "emessage"
+	SSays = "ssays"
+	ESays = "esays"
+	STime = "stime"
+	ETime = "etime"
+
+def get_mark_name(type, value1, value2=None, value3=None):
+	name = type
+	if value1: name += str(value1)
+	if value2: name += str(value2)
+	if value3: name += str(value3)
+	return name
+
+class Bubble:
+	messages = []
+	text_buffer = None
+	# TODO, experiment with static ID, maybe this keyword?
+
+	def __init__(self, id, textbuffer, owner, date_time):
+		self.start = date_time
+		self.end = date_time
+		self.owner = owner
+		self.messages = []
+		self.text_buffer = textbuffer
+		self.id = id
+
+	def _get_insertion_point(self, id_chats):
+		last = 0
+		for i in range(0, len(self.messages)):
+			if i > 0:
+				last = self.messages[i - 1]
+
+			if last < id_chats > self.messages[i]['idchats']:
+				if last == 0:
+					last_mark = get_mark_name(BubbleMarkName.SBubble, self.id)
+				else:
+					last_mark = get_mark_name(BubbleMarkName.SMessage, self.messages[i]['idchats'])
+				return last_mark, i
+
+		return None, len(self.messages)
+
+	def add_message(self, message):
+		insert_after_mark, i = self._get_insertion_point(message['idchats'])
+
+		self.messages.insert(message['idchats'], i)
+
+		#iterator =
+		pass
+
+class Bubbles:
+	bubbles = []
+	text_buffer = None
+	new_bubble_id = 0
+
+									# Scott Meyer says something I dont remember about passing a variable through a
+	def __init__(self, textbuffer):	# bunch of things just cause the end thing needs it, hmmm, what was that now.
+		self.text_buffer = textbuffer
+
+	def _find_bubble_from_time(self, owner, date_time):
+		# Iterate through all the bubbles looking for a compatible one
+		for i in self.bubbles:
+			if (i.start - datetime.min(BUBBLE_TIME_WINDOW) < date_time < i.end - datetime.min(BUBBLE_TIME_WINDOW) and
+				owner == i.owner):
+				return x
+		# We didn't find one
+		return False
+
+	def _create_bubble_for_message(self, owner, date_time):
+		new_bubble = Bubble(self.new_bubble_id, self.text_buffer, owner, date_time)
+		self.new_bubble_id += 1
+		return new_bubble
+
+	def _bubble_merge_seek(self):
+		pass
+
+	def _bubble_join_bubble(self):
+		pass
+
+class BubbleBuffer(Gtk.TextBuffer):
+	mark_name_list = []
+	last_cat = 0
+
+	def __init__(self, owner_id):
+		Gtk.TextBuffer.__init__(self)
+		self.setup_tags_and_buffer()
+		self.owner_id = owner_id
+
+	def _get_not_so_start_iter(self):
+		me = self.get_start_iter()
+		me.forward_char()
+		if not me: raise(ValueError("Someone soiled the buffer!"))
+		return me
 
 
-class ChatBubbleRenderer(object):
-	sender_id = 0
-	sender_says_tag = Gtk.TextTag()
-	cchttp = None
-	textbuffer = None
-	last_writter = -1	# The ID of the last bubble inserted
 
-	class BubbleList:
-		bubbles = []
-
-		
-
-	class BubbleMark:
-		SBubble 	= "sbubble",
-		EBubble 	= "ebubble"
-		SMessage 	= "smessage"
-		EMessage	= "emessage"
-		SSays		= "ssays"
-		ESays		= "esays"
-		STime		= "stime"
-		ETime		= "etime"
+	def setup_tags_and_buffer(self):
+		self.create_tag("says",				weight=Pango.Weight.BOLD)
+		self.create_tag("message",			indent=10)
+		self.create_tag("time-sent",		variant=Pango.Variant.SMALL_CAPS,
+											scale=0.75,
+											wrap_mode_set=Gtk.WrapMode.NONE)
 
 
-	def __init__(self, cchttpv, textbuffer):
-		self.cchttp = cchttpv
-		self.sender_id = self.cchttp.userid
-		self.textbuffer = textbuffer
+		self.create_tag("bubble-left",		paragraph_background="lightgreen",
+											right_margin=50)
 
-	def setup_tags(self):
-		#background="orange", justification=Gtk.Justification.RIGHT
-		self.textbuffer.create_tag("says",			weight=Pango.Weight.BOLD)
-		self.textbuffer.create_tag("message",		indent=10,
+		self.create_tag("bubble-right",  	justification=Gtk.Justification.RIGHT,
+											paragraph_background="lightblue",
+											left_margin = 100,
+											direction=Gtk.TextDirection.RTL,
+											wrap_mode=Gtk.WrapMode.WORD_CHAR,
+											right_margin = 0)
+		self.create_tag("highlight",		background="orange");
 
-													)
-		self.textbuffer.create_tag("time-sent",		variant=Pango.Variant.SMALL_CAPS,
-													scale=0.75,
-													wrap_mode_set=Gtk.WrapMode.NONE)
+		self.insert(self.get_end_iter(), "\n\n")
 
+	def create_mark(self, name, itera, left_gravity=True):
+		if name in self.mark_name_list:
+			raise ValueError("You already created a mark with this name!")
 
-		self.textbuffer.create_tag("bubble-left",	paragraph_background="lightgreen",
-												right_margin=50)
+		offset = itera.get_offset()
 
-		self.textbuffer.create_tag("bubble-right",  justification=Gtk.Justification.RIGHT,
-													paragraph_background="lightblue",
-													left_margin = 100,
-													direction=Gtk.TextDirection.RTL,
-													wrap_mode=Gtk.WrapMode.WORD_CHAR,
-													right_margin = 0)
-
-		self.textbuffer.create_tag("highlight",		background="orange");
+		if itera.get_offset() == 0:
+			print "hi"
+			self.insert(self.get_start_iter(), "\n")
+			itera = self.get_iter_at_offset(1)
 
 
-	def create_mark(self, mark_type, mark_value, where):
-		if(mark_type[0] == "s"):
-			left_gravity = True
-		elif (mark_type[0] == "e"):
-			left_gravity = False
+		Gtk.TextBuffer.create_mark(self, name,itera,left_gravity)
+		mark = self.get_mark(name)
+		mark.set_visible(True)
 
-		new_mark = self.textbuffer.create_mark(mark_type + ":" + str(mark_value), where, left_gravity)
-
-		new_mark.set_visible(True)
-		return new_mark
-
-	def get_iter_at_mark(self, mark_type, mark_value):
-		mark_name = mark_type + ":" + mark_value
-
-		iter = self.textbuffer.get_iter_at_mark(mark_name)
-
-		if (iter == None):
-			raise ValueError("Cannot find mark to return iterator")
-
-		return iter
+		self.mark_name_list.append(name)
 
 
-	##############################
-	# things added to chat
-	def insert_image(self, iterator, message):
-		self.create_mark(self.BubbleMark.SMessage, message["idchats"], iterator)
-		self.create_mark(self.BubbleMark.EMessage, message["idchats"], iterator)
-		picture = cc_pictures.get_pixbuf_thumbnail_from_hash(self.cchttp, message['message'])
-		self.textbuffer.insert_pixbuf(iterator, picture)
-		iterator.forward_char()
-		self.insert_space_ahead(iterator)
 
-	def insert_text(self, iterator, message):
-		self.create_mark(self.BubbleMark.SMessage, message["idchats"], iterator)
-		self.create_mark(self.BubbleMark.EMessage, message["idchats"], iterator)
-		self.textbuffer.insert_with_tags_by_name(iterator, message['message'] + "\n" , "message")
-		iterator.forward_char()
-		self.insert_space_ahead(iterator)
-
-	def insert_says(self, iterator, message):
-		self.create_mark(self.BubbleMark.SSays, str(message["creator"]) + "," + str(message['idchats']), iterator)
-		self.create_mark(self.BubbleMark.ESays, str(message["creator"]) + "," + str(message['idchats']), iterator)
-		self.textbuffer.insert_with_tags_by_name(iterator, str(message['creator']) + " says:\n", "says")
-		iterator.forward_char()
-		self.insert_space_ahead(iterator)
-
-	def insert_time(self, iterator, message):
-		self.create_mark(self.BubbleMark.STime, message["msg_written"], iterator)
-		self.create_mark(self.BubbleMark.ETime, message["msg_written"], iterator)
-		self.textbuffer.insert_with_tags_by_name(iterator, "Time sent: " + message['msg_written'] + "\n", "time-sent")
-		iterator.forward_char()
-		self.insert_space_ahead(iterator)
-
-	def get_between_marks(self, mark_begin, mark_end, mark_value):
-		smark = self.textbuffer.get_mark(mark_begin + ":" + mark_value)
-		emark = self.textbuffer.get_mark(mark_end + ":" + mark_value)
-
-
-		print "mark range: " + str(self.textbuffer.get_iter_at_mark(smark).get_offset()) + " to "  + str(self.textbuffer.get_iter_at_mark(emark).get_offset())
-		if((smark or emark) == None):
-			return None
-
-		return (self.textbuffer.get_iter_at_mark(smark), self.textbuffer.get_iter_at_mark(emark))
-
-	def insert_space_ahead(self, iter):
-		self.textbuffer.insert(iter, "\0")
-		iter.backward_char()
-
-	def add_to_bubble_list(self, new_idchats, utcdateobject):
-		date_object = datetime.strptime(utcdateobject, '%Y-%m-%d %H:%M:%S')
-		catfood = { 'idchats':new_idchats, 'date_object':utcdateobject }
-		self.idchats_info.append(catfood)
-
-	def add_bubble(self, message):
-		insert_at = self.textbuffer.get_end_iter()
-
-		self.insert_space_ahead(insert_at)
-
-		# Add a space between this and the last bubble
-		self.textbuffer.insert(insert_at, "\n")
-
-		# Add the 'James says:'  part
-		self.insert_says(insert_at, message)
-
-		# Just a normal text message
-		if(message['message_type'] == 0):
-			self.insert_text(insert_at, message)
-		# A fancy pants image message!
-		if (message['message_type'] == 1):
-			self.insert_image(insert_at, message)
-
-		self.insert_time(insert_at, message)
-
-
-		iter_range = self.get_between_marks(self.BubbleMark.SMessage, self.BubbleMark.EMessage, "231")
-		self.textbuffer.apply_tag_by_name("highlight", *iter_range)
+	def insert_message(self, message):
+		self.create_mark("catman" + str(self.last_cat), self.get_start_iter())
+		self.last_cat += 1
+		#insertion_point =
+		pass
