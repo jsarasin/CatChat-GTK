@@ -53,10 +53,10 @@ class MyWindow(Gtk.Window):
 		self.textview = Gtk.TextView()
 		self.textview.set_buffer(self.chatroom.bubblebuffer)
 		self.textview.set_wrap_mode(Gtk.WrapMode.WORD_CHAR)
-		# self.textview.set_editable(False)
-		# self.textview.set_cursor_visible(False)
-		self.textview.connect("move-cursor", self.move_cursor_info)
-		self.textview.connect("button-release-event", self.mouse_click)
+		self.textview.set_editable(False)
+		self.textview.set_cursor_visible(False)
+		color = Gdk.RGBA(1, 0, 0, 0)
+		#self.textview.override_background_color(Gtk.StateType.NORMAL, color)
 
 		self.chat_scrollwindow.add(self.textview)
 		self.box.add(self.chat_scrollwindow)
@@ -64,11 +64,6 @@ class MyWindow(Gtk.Window):
 		# Create the text entry
 		self.entry = Gtk.Entry()
 		self.entry.connect("activate", self.on_entry_return)
-
-		self.label = Gtk.Label()
-		self.label.set_halign(Gtk.Align.START)
-		self.box.add(self.label)
-
 
 		#########GObject.timeout_add_seconds(2, self.update_chat)
 
@@ -91,20 +86,9 @@ class MyWindow(Gtk.Window):
 		self.update_chat()
 
 
-	def mouse_click(self, widget, event):
-		self.update_info_label()
-		return False
-
-	def move_cursor_info(self, text_view,step,count,extend_selection):
-		self.update_info_label()
-
-	def update_info_label(self):
-		text = self.chatroom.bubblebuffer.get_iter_at_mark(self.chatroom.bubblebuffer.get_mark('insert'))
-		self.label.set_text(str(text.get_offset()))
-		pass
-
 	def scroll_to_bottom(self):
-		iter =  self.chatroom.bubblebuffer.get_iter_at_line(self.chatroom.bubblebuffer.get_line_count() - 1)
+		iter =  self.chatroom.bubblebuffer.get_iter_at_line(self.chatroom.bubblebuffer.get_line_count())
+		self.textview.scroll_to_iter(iter, 0, True, 0, 1)
 
 
 	def on_entry_return(self, input):

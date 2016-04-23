@@ -2,8 +2,8 @@ import gi
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk
 
-import cc_http
 from cc_chatbubblerenderer import BubbleBuffer
+from datetime import datetime
 
 class cc_chat(object):
 	chatroom = 0
@@ -12,7 +12,7 @@ class cc_chat(object):
 
 	def __init__(self, cchttpv):
 		self.cchttp = cchttpv
-		self.bubblebuffer = BubbleBuffer(self.cchttp.userid)
+		self.bubblebuffer = BubbleBuffer(self.cchttp)
 
 		self.update_required()
 
@@ -45,7 +45,11 @@ class cc_chat(object):
 		if (reply.get('up_to_date', False) == True):
 			return False
 
+		# We got some messages.
 		for message in reply['chat_log']:
+			# Let's convert the msg_written string to a datetime object
+			date_object = datetime.strptime(message['msg_written'], '%Y-%m-%d %H:%M:%S')
+			message['msg_written'] = date_object
 			self.add_message_bubble(message)
 
 		return True
