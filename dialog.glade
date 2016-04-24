@@ -11,6 +11,7 @@
         <property name="short_label" translatable="yes">Connect</property>
         <property name="tooltip" translatable="yes">Connect to all configured services.</property>
         <property name="stock_id">gtk-connect</property>
+        <signal name="activate" handler="onConnectServices" swapped="no"/>
       </object>
       <accelerator key="c" modifiers="GDK_CONTROL_MASK"/>
     </child>
@@ -20,6 +21,8 @@
         <property name="short_label" translatable="yes">Disconnect</property>
         <property name="tooltip" translatable="yes">Disconnected from all configured services.</property>
         <property name="stock_id">gtk-disconnect</property>
+        <property name="sensitive">False</property>
+        <signal name="activate" handler="onDisconnectServices" swapped="no"/>
       </object>
       <accelerator key="d" modifiers="GDK_CONTROL_MASK"/>
     </child>
@@ -66,12 +69,40 @@
       <object class="GtkToggleAction" id="action_debug_show_area">
         <property name="label" translatable="yes">Show Debug Area</property>
         <property name="tooltip" translatable="yes">Display the ugly debug area.</property>
+        <property name="active">True</property>
       </object>
     </child>
   </object>
-  <object class="GtkWindow" id="window1">
+  <object class="GtkImageMenuItem" id="imagemenuitem4">
+    <property name="use_action_appearance">True</property>
+    <property name="related_action">action_debug_show_area</property>
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <property name="use_underline">True</property>
+    <property name="use_stock">True</property>
+  </object>
+  <object class="GtkImageMenuItem" id="imagemenuitem5">
+    <property name="label" translatable="yes">imagemenuitem</property>
+    <property name="use_action_appearance">True</property>
+    <property name="related_action">action_debug_show_area</property>
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <property name="use_stock">False</property>
+  </object>
+  <object class="GtkImageMenuItem" id="imagemenuitem7">
+    <property name="use_action_appearance">True</property>
+    <property name="related_action">action_debug_show_area</property>
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <property name="use_underline">True</property>
+    <property name="use_stock">True</property>
+  </object>
+  <object class="GtkWindow" id="main_window">
+    <property name="width_request">400</property>
+    <property name="height_request">700</property>
     <property name="can_focus">False</property>
     <property name="title" translatable="yes">CatChat</property>
+    <property name="window_position">center</property>
     <child>
       <object class="GtkBox" id="box1">
         <property name="can_focus">False</property>
@@ -84,7 +115,7 @@
               <object class="GtkMenuItem" id="menu_services">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
-                <property name="label" translatable="yes">Services</property>
+                <property name="label" translatable="yes">_Services</property>
                 <property name="use_underline">True</property>
                 <child type="submenu">
                   <object class="GtkMenu" id="menu1">
@@ -101,7 +132,7 @@
                       </object>
                     </child>
                     <child>
-                      <object class="GtkImageMenuItem" id="imagemenuitem1">
+                      <object class="GtkImageMenuItem" id="menu_disconnect">
                         <property name="use_action_appearance">True</property>
                         <property name="related_action">action_disconnect</property>
                         <property name="visible">True</property>
@@ -117,7 +148,7 @@
                       </object>
                     </child>
                     <child>
-                      <object class="GtkImageMenuItem" id="imagemenuitem2">
+                      <object class="GtkImageMenuItem" id="menu_configure_services">
                         <property name="use_action_appearance">True</property>
                         <property name="related_action">action_configure_services</property>
                         <property name="visible">True</property>
@@ -127,7 +158,7 @@
                       </object>
                     </child>
                     <child>
-                      <object class="GtkImageMenuItem" id="imagemenuitem3">
+                      <object class="GtkImageMenuItem" id="menu_show_http_debug">
                         <property name="use_action_appearance">True</property>
                         <property name="related_action">action_debug_http_log</property>
                         <property name="visible">True</property>
@@ -143,13 +174,35 @@
                       </object>
                     </child>
                     <child>
-                      <object class="GtkImageMenuItem" id="menuitem1">
+                      <object class="GtkImageMenuItem" id="menu_quit">
                         <property name="use_action_appearance">True</property>
                         <property name="related_action">action_quit</property>
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="use_underline">True</property>
                         <property name="use_stock">True</property>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+              </object>
+            </child>
+            <child>
+              <object class="GtkMenuItem" id="menu_view">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="label" translatable="yes">_View</property>
+                <property name="use_underline">True</property>
+                <child type="submenu">
+                  <object class="GtkMenu" id="menu2">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <child>
+                      <object class="GtkCheckMenuItem" id="menu_toggle_show_debug_area">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="label" translatable="yes">Show Debug Toolbar</property>
+                        <signal name="toggled" handler="onToggleShowDebugArea" swapped="no"/>
                       </object>
                     </child>
                   </object>
@@ -187,7 +240,6 @@
                 <property name="use_action_appearance">True</property>
                 <property name="related_action">action_disconnect</property>
                 <property name="visible">True</property>
-                <property name="sensitive">False</property>
                 <property name="can_focus">False</property>
                 <property name="label" translatable="yes">toolbutton1</property>
                 <property name="use_underline">True</property>
@@ -281,5 +333,36 @@
         </child>
       </object>
     </child>
+  </object>
+  <object class="GtkAdjustment" id="adjustment2">
+    <property name="upper">100</property>
+    <property name="step_increment">1</property>
+    <property name="page_increment">10</property>
+  </object>
+  <object class="GtkSpinButton" id="spinbutton1">
+    <property name="visible">True</property>
+    <property name="can_focus">True</property>
+    <property name="input_purpose">number</property>
+    <property name="adjustment">adjustment2</property>
+    <property name="numeric">True</property>
+  </object>
+  <object class="GtkCheckMenuItem" id="imagemenuitem1">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <property name="label" translatable="yes">imagemenuitem</property>
+  </object>
+  <object class="GtkMenuItem" id="imagemenuitem2">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <property name="label" translatable="yes">imagemenuitem</property>
+  </object>
+  <object class="GtkCheckMenuItem" id="imagemenuitem3">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <property name="label" translatable="yes">imagemenuitem</property>
+  </object>
+  <object class="GtkCheckMenuItem" id="imagemenuitem6">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
   </object>
 </interface>
