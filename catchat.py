@@ -65,7 +65,7 @@ class MyWindow(Gtk.Window):
 		self.entry = Gtk.Entry()
 		self.entry.connect("activate", self.on_entry_return)
 
-		#########GObject.timeout_add_seconds(2, self.update_chat)
+		GObject.timeout_add_seconds(2, self.update_chat)
 
 
 
