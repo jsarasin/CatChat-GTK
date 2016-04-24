@@ -128,6 +128,7 @@ class Bubbles:
 	new_bubble_id = 0
 	viewer_id = None
 	chttp = None
+	last_chat_bubble_owner = None
 
 	def __init__(self, textbuffer, chttp):
 		self.chttp = chttp
@@ -136,7 +137,7 @@ class Bubbles:
 
 	def _find_bubble_from_time(self, owner, date_time):
 		# Iterate through all the bubbles looking for a compatible one
-		for i in self.bubbles:
+		for i in reversed(self.bubbles):
 			min_time = i.start - datetime.timedelta(minutes=BUBBLE_TIME_WINDOW)
 			max_time = i.end + datetime.timedelta(minutes=BUBBLE_TIME_WINDOW)
 
@@ -161,7 +162,11 @@ class Bubbles:
 		pass
 
 	def add_message(self, message):		# TODO: Creator, owner are the same thing. In the DB it's called creator_id. Uhg
-		bubble = self._find_bubble_from_time(message['creator'], message['msg_written'])
+		if self.last_chat_bubble_owner == message['creator']:
+			bubble = self._find_bubble_from_time(message['creator'], message['msg_written'])
+		else:
+			bubble = False
+			self.last_chat_bubble_owner = message['creator']
 
 		if(bubble == False):
 			bubble = self._create_bubble_for_message(message['creator'], message['msg_written'])
@@ -237,4 +242,5 @@ class BubbleBuffer(Gtk.TextBuffer):
 	def insert_message(self, message):
 		self.last_cat += 1
 		self.bubbles.add_message(message)
+		print "Real line count" + str(self.get_line_count())
 		pass

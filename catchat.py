@@ -65,7 +65,7 @@ class MyWindow(Gtk.Window):
 		self.entry = Gtk.Entry()
 		self.entry.connect("activate", self.on_entry_return)
 
-		#########GObject.timeout_add_seconds(2, self.update_chat)
+		GObject.timeout_add_seconds(2, self.update_chat)
 
 
 
@@ -84,11 +84,13 @@ class MyWindow(Gtk.Window):
 		self.box.add(self.entry)
 
 		self.update_chat()
+		self.scroll_to_bottom()
 
 
 	def scroll_to_bottom(self):
-		iter =  self.chatroom.bubblebuffer.get_iter_at_line(self.chatroom.bubblebuffer.get_line_count())
+		iter =  self.chatroom.bubblebuffer.get_iter_at_line(self.chatroom.bubblebuffer.get_line_count()-1)
 		self.textview.scroll_to_iter(iter, 0, True, 0, 1)
+		print self.chatroom.bubblebuffer.get_line_count()
 
 
 	def on_entry_return(self, input):
