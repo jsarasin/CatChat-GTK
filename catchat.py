@@ -17,7 +17,6 @@ def start_program():
 	CCHttp = cc_http.cc_http()
 
 	builder = Gtk.Builder()
-	builder.add_from_file("dialog.glade")
 
 	main_window = cc_main_window(builder)
 

@@ -15,6 +15,7 @@ class cc_main_window(object):
 
 	def __init__(self, builder):
 		self.builder = builder
+		builder.add_from_file("glade/main_window.glade")
 		self.window = builder.get_object("main_window")
 
 		self.builder.connect_signals(self)
