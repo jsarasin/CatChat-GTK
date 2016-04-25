@@ -51,22 +51,70 @@ class cc_configure_services(object):
 	def open_window(self):
 		self.editing_config = get_cc_config()
 		self.update_liststore()
+		self.global_settings_visible(False)
 		self.window.show_all()
+
+	def update_url_fields_for_index(self, index):
+		service_info = self.editing_config['services'][index]
+		server_url_address = self.builder.get_object('server_url_address')
+		server_url_username = self.builder.get_object('server_url_username')
+		server_url_password = self.builder.get_object('server_url_password')
+
+		server_url_address.set_text(service_info['server-url'])
+		server_url_username.set_text(service_info['username'])
+		server_url_password.set_text(service_info['password'])
+
+	# This is called to update the configuration details area
+	# As there may be multiple types of connections, we need to
+	# update global properties, and then call for specific types
+	def update_fields_for_index(self, index):
+		service_info = self.editing_config['services'][index]
+
+		server_display_name = self.builder.get_object('server_display_name')
+		server_type = self.builder.get_object('server_type')
+
+		server_display_name.set_text(service_info['display-name'])
+
+		selectables = {
+			'url':0,
+		}
+
+		if service_info['server-type'] == 'url':
+			combo_selection = 0
+		else:
+			raise(ValueError('Unknown Server Type'))
+
+		server_type.set_active(combo_selection)
+
+		if service_info['server-type'] is 'url':
+			self.update_url_fields_for_index(index)
+
+	def save_changes(self):
+		pass
+
+
+	# Hide the global settings. We need to do this when we're on the first tab with the sad cat
+	def global_settings_visible(self, visible):
+		gb1 = self.builder.get_object('global_config_box1')
+		gb1.set_visible(visible)
 
 	def onTreeViewSelectionChange(self, selection):
 		model, iterator = selection.get_selected()
 		if iterator is None:
 			self.notebook.set_current_page(0)
+			self.global_settings_visible(False)
 			return
 
 		selectables = {
 			'url':1,
 		}
 
+		self.global_settings_visible(True)
 		note_page = getattr(selectables, model[iterator][2], 1)
-
 		self.notebook.set_current_page(note_page)
 
+		selected_index = model[iterator][1]
+		self.update_fields_for_index(selected_index)
 
 
 	def onCloseWindow(self, widget, event ):

@@ -7,9 +7,9 @@
     <property name="accel_group">accelgroup1</property>
     <child>
       <object class="GtkAction" id="action_connect">
-        <property name="label" translatable="yes">Connect</property>
-        <property name="short_label" translatable="yes">Connect</property>
-        <property name="tooltip" translatable="yes">Connect to all configured services.</property>
+        <property name="label" translatable="yes">Connect Default</property>
+        <property name="short_label" translatable="yes">Connect Default</property>
+        <property name="tooltip" translatable="yes">Connect to services configured for default start.</property>
         <property name="stock_id">gtk-connect</property>
         <signal name="activate" handler="onConnectServices" swapped="no"/>
       </object>
@@ -17,7 +17,7 @@
     </child>
     <child>
       <object class="GtkAction" id="action_disconnect">
-        <property name="label" translatable="yes">Disconnect</property>
+        <property name="label" translatable="yes">Disconnect All</property>
         <property name="short_label" translatable="yes">Disconnect</property>
         <property name="tooltip" translatable="yes">Disconnected from all configured services.</property>
         <property name="stock_id">gtk-disconnect</property>
@@ -98,6 +98,31 @@
     <property name="use_underline">True</property>
     <property name="use_stock">True</property>
   </object>
+  <object class="GtkImage" id="image1">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <property name="stock">gtk-missing-image</property>
+  </object>
+  <object class="GtkImage" id="image2">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <property name="stock">gtk-missing-image</property>
+  </object>
+  <object class="GtkImage" id="image3">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <property name="stock">gtk-missing-image</property>
+  </object>
+  <object class="GtkImage" id="image4">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <property name="stock">gtk-missing-image</property>
+  </object>
+  <object class="GtkImage" id="image5">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <property name="stock">gtk-missing-image</property>
+  </object>
   <object class="GtkWindow" id="main_window">
     <property name="width_request">400</property>
     <property name="height_request">700</property>
@@ -124,22 +149,46 @@
                     <property name="can_focus">False</property>
                     <child>
                       <object class="GtkImageMenuItem" id="menu_connect">
+                        <property name="label" translatable="yes">Connect</property>
                         <property name="use_action_appearance">True</property>
                         <property name="related_action">action_connect</property>
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
+                        <property name="image">image1</property>
+                        <property name="use_stock">False</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkMenuItem" id="menu_connect_single">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="label" translatable="yes">Connect</property>
                         <property name="use_underline">True</property>
-                        <property name="use_stock">True</property>
+                        <child type="submenu">
+                          <object class="GtkMenu" id="menu3">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <child>
+                              <object class="GtkMenuItem" id="menuitem1">
+                                <property name="visible">True</property>
+                                <property name="can_focus">False</property>
+                                <property name="label" translatable="yes">DO ME!</property>
+                                <property name="use_underline">True</property>
+                              </object>
+                            </child>
+                          </object>
+                        </child>
                       </object>
                     </child>
                     <child>
                       <object class="GtkImageMenuItem" id="menu_disconnect">
+                        <property name="label" translatable="yes">Disconnect</property>
                         <property name="use_action_appearance">True</property>
                         <property name="related_action">action_disconnect</property>
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
-                        <property name="use_underline">True</property>
-                        <property name="use_stock">True</property>
+                        <property name="image">image2</property>
+                        <property name="use_stock">False</property>
                       </object>
                     </child>
                     <child>
@@ -150,22 +199,24 @@
                     </child>
                     <child>
                       <object class="GtkImageMenuItem" id="menu_configure_services">
+                        <property name="label" translatable="yes">Configure Services</property>
                         <property name="use_action_appearance">True</property>
                         <property name="related_action">action_configure_services</property>
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
-                        <property name="use_underline">True</property>
-                        <property name="use_stock">True</property>
+                        <property name="image">image3</property>
+                        <property name="use_stock">False</property>
                       </object>
                     </child>
                     <child>
                       <object class="GtkImageMenuItem" id="menu_show_http_debug">
+                        <property name="label" translatable="yes">Show HTTP Debug Window</property>
                         <property name="use_action_appearance">True</property>
                         <property name="related_action">action_debug_http_log</property>
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
-                        <property name="use_underline">True</property>
-                        <property name="use_stock">True</property>
+                        <property name="image">image4</property>
+                        <property name="use_stock">False</property>
                       </object>
                     </child>
                     <child>
@@ -176,12 +227,13 @@
                     </child>
                     <child>
                       <object class="GtkImageMenuItem" id="menu_quit">
+                        <property name="label" translatable="yes">Quit</property>
                         <property name="use_action_appearance">True</property>
                         <property name="related_action">action_quit</property>
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
-                        <property name="use_underline">True</property>
-                        <property name="use_stock">True</property>
+                        <property name="image">image5</property>
+                        <property name="use_stock">False</property>
                       </object>
                     </child>
                   </object>

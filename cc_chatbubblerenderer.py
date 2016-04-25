@@ -8,6 +8,19 @@ from gi.repository import Gtk, Gdk, Pango, GdkPixbuf, GLib
 BUBBLE_TIME_WINDOW = 1		# The time allowed between messages
 
 
+
+
+
+
+
+#				set_app_paintable
+
+
+
+
+
+
+
 class Bubble:
 	messages = []
 	text_buffer = None
