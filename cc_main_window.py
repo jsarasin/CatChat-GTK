@@ -28,6 +28,9 @@ class cc_main_window(object):
 
 		# Load other dialogs
 		self.configure_services_dialog = cc_configure_services(builder)
+		self.configure_services_dialog.window.set_transient_for(self.window)
+		self.configure_services_dialog.open_window()
+
 		# Startup Operations
 		if get_cc_config()['auto-connect']:
 			self.onConnectServices(None)
@@ -54,6 +57,6 @@ class cc_main_window(object):
 		self.builder.get_object('debug_box').set_visible(menu_item.get_active())
 
 	def onConfigureServices(self, action):
-		print "Asdf"
+		self.configure_services_dialog.open_window()
 
 

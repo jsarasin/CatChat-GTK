@@ -1,11 +1,33 @@
 # File: cc_configurator.py
-# Description:  This file provides an interface to program options. It's really basic.
-#				It just loads and saves a JSON file and provides a name to access it by
+# Description:  This file provides an interface to program options.
+#				This stores the default program configuration, if one cannot
+#				be loaded from disk.
+# Included in the configuration:
+# - Program interface preferences
+# - Configured services. These are CatChat servers
 
 import json
+import os.path
 
-config = {'auto-connect':True
-			}
+default_config = {	'auto-connect':True,
+					'services':[
+						{
+						'display-name'	:'Main Server',
+						'server-type'	:'url',
+						'server-url'	:'http://azenguard.com/CatChat/',
+						'user-name'		:'james',
+						'password'		:'computer'
+						}
+						]
+				}
+
+config = None
 
 def get_cc_config():
+	global config
+	if config is None:
+		if not os.path.isfile("~/.catchat"):
+			print "No configuration file. Using defaults"
+			config = default_config
+
 	return config
