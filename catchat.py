@@ -13,12 +13,12 @@ from gi.repository import Gtk, Pango, Gdk, GObject
 builder = None
 
 def start_program():
-	builder = Gtk.Builder()
+    builder = Gtk.Builder()
 
-	main_window = cc_main_window(builder)
+    main_window = cc_main_window(builder)
 
-	Gtk.main()
+    Gtk.main()
 
 
 if __name__ == "__main__":
-	start_program()
+    start_program()
