@@ -6,7 +6,7 @@ import hashlib
 
 
 class cc_http(object):
-	server_url = 'http://azenguard.com/CatChat/'
+	server_url = 'http://107.150.59.253/'
 	username='james'
 	password='computer'
 	userid=0

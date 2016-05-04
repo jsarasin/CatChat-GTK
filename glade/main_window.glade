@@ -103,25 +103,20 @@
     <property name="can_focus">False</property>
     <property name="stock">gtk-missing-image</property>
   </object>
-  <object class="GtkImage" id="image2">
-    <property name="visible">True</property>
-    <property name="can_focus">False</property>
-    <property name="stock">gtk-missing-image</property>
-  </object>
   <object class="GtkImage" id="image3">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
-    <property name="stock">gtk-missing-image</property>
+    <property name="stock">gtk-convert</property>
   </object>
   <object class="GtkImage" id="image4">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
-    <property name="stock">gtk-missing-image</property>
+    <property name="icon_name">utilities-terminal</property>
   </object>
   <object class="GtkImage" id="image5">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
-    <property name="stock">gtk-missing-image</property>
+    <property name="stock">gtk-quit</property>
   </object>
   <object class="GtkWindow" id="main_window">
     <property name="width_request">400</property>
@@ -182,13 +177,12 @@
                     </child>
                     <child>
                       <object class="GtkImageMenuItem" id="menu_disconnect">
-                        <property name="label" translatable="yes">Disconnect</property>
+                        <property name="label">gtk-disconnect</property>
                         <property name="use_action_appearance">True</property>
                         <property name="related_action">action_disconnect</property>
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
-                        <property name="image">image2</property>
-                        <property name="use_stock">False</property>
+                        <property name="use_stock">True</property>
                       </object>
                     </child>
                     <child>
@@ -255,6 +249,7 @@
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="label" translatable="yes">Show Debug Toolbar</property>
+                        <property name="active">True</property>
                         <signal name="toggled" handler="onToggleShowDebugArea" swapped="no"/>
                       </object>
                     </child>
@@ -320,6 +315,7 @@
                   <object class="GtkComboBoxText" id="comboboxtext1">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
+                    <property name="active">0</property>
                     <items>
                       <item translatable="yes">Online</item>
                       <item translatable="yes">Invisible</item>
@@ -341,8 +337,20 @@
         </child>
         <child>
           <object class="GtkBox" id="debug_box">
-            <property name="visible">True</property>
             <property name="can_focus">False</property>
+            <child>
+              <object class="GtkImage" id="image2">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="no_show_all">True</property>
+                <property name="icon_name">utilities-terminal</property>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="position">0</property>
+              </packing>
+            </child>
             <child>
               <placeholder/>
             </child>

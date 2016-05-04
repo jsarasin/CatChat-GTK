@@ -14,7 +14,7 @@ default_config = {	'auto-connect':True,
 						{
 						'display-name'	:'Main Server',
 						'server-type'	:'url',
-						'server-url'	:'http://azenguard.com/CatChat/',
+						'server-url'	:'http://107.150.59.253/',
 						'username'		:'james',
 						'password'		:'computer'
 						}

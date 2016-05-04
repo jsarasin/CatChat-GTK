@@ -25,6 +25,7 @@ class cc_main_window(object):
 		self.window.connect("delete-event", Gtk.main_quit)
 
 		self.window.show_all()
+		self.UpdateGUI()
 
 		# Load other dialogs
 		self.configure_services_dialog = cc_configure_services(builder)
@@ -53,9 +54,13 @@ class cc_main_window(object):
 		self.toggle_connect_disconnect_action_items(False)
 
 	def onToggleShowDebugArea(self, menu_item):
-		self.builder.get_object('debug_box').set_visible(menu_item.get_active())
+		self.UpdateGUI()
 
 	def onConfigureServices(self, action):
 		self.configure_services_dialog.open_window()
+
+	def UpdateGUI(self):
+		show_debug_bar = self.builder.get_object('menu_toggle_show_debug_area').get_active()
+		self.builder.get_object('debug_box').set_visible(show_debug_bar)
 
 
